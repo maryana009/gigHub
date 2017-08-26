@@ -1,0 +1,110 @@
+﻿@using GigHub.ViewModels
+
+@model GigsViewModel
+
+@{
+    ViewBag.Title = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@Model.Heading</h1>
+
+@using (Html.BeginForm("Search", "Gigs"))
+{
+    <div class="form-group">
+        <div class="input-group" style="width:300px">
+            @Html.TextBoxFor(m => m.SearchTerm, new { @class = "form-control" })
+                <span class="input-group-addon">
+                    <i class="glyphicon glyphicon-search"></i>
+                </span>
+        </div>
+    </div>
+}
+
+<ul class="gigs voffset40">
+    @foreach (var gig in Model.UpcomingGigs)
+    {
+        <li>
+            <div class="date">
+                <div class="month">@gig.DateTime.ToString("MMM")</div>
+                <div class="day">@gig.DateTime.ToString("d ")</div>
+            </div>
+            <div class="details">
+                <span class="artist">
+                    <a href="@Url.Action("Details","Gigs", new {id=gig.Id})">@gig.Artist.Name</a>
+                    @if (gig.IsCanceled)
+                    {
+                        <span class="label label-warning">Canceled</span>
+                    }
+                </span>
+                
+                @if (Model.SchowActions)
+                {
+                    <button data-user-id="@gig.ArtistId" class="btn btn-link btn-sm pull-right js-toggle-follow">Follow?</button>
+                }
+                <span class="genre">@gig.Genre.Name</span>
+                @if (Model.SchowActions && !gig.IsCanceled)
+                {
+                    <button data-gig-id="@gig.Id" class="btn 
+                            @(Model.Attendancies.Contains(gig.Id) ? "btn-info": "btn-default")
+                            btn-sm pull-right js-toggle-attendance">Going?</button>
+                }
+            </div>
+
+        </li>
+    }
+</ul>
+
+@section scripts
+{
+    <script>
+        $(document)
+            .ready(function() {
+                $(".js-toggle-attendance")
+                    .click(function(e) {
+                        var button = $(e.target);
+                        if (button.hasClass("btn-default")) {
+                            $.post("/api/attendances", { gigId: button.attr("data-gig-id") })
+                                .done(function() {
+                                    button
+                                        .removeClass("btn-default")
+                                        .addClass("btn-info")
+                                        .text("Going");
+                                })
+                                .fail(function() {
+                                    alert("Something went wrong");
+                                });
+                        } else {
+                            $.ajax({
+                                    url: "api/attendances/" + button.attr("data-gig-id"),
+                                    method: "DELETE"
+                                })
+                                .done(function() {
+                                    button
+                                        .removeClass("btn-info")
+                                        .addClass("btn-default")
+                                        .text("Going?");
+                                })
+                                .fail(function() {
+                                    alert("Something failed");
+                                });
+                        }
+                    });
+            
+
+
+        $(".js-toggle-follow")
+            .click(function(e) {
+                var button = $(e.target);
+                $.post("/api/followings", { gigId: button.attr("data-user-id") })
+                    .done(function() {
+                        button
+                            .text("Following");
+                    })
+                    .fail(function() {
+                        alert("Something failed");
+                    });
+            });
+    })
+    </script>
+} 
