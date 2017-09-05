@@ -8,18 +8,23 @@ using System.Web.Mvc;
 
 namespace GigHub.Controllers
 {
+    using GigHub.Repositories;
+
     using Microsoft.AspNet.Identity;
 
     public class HomeController : Controller
     {
         private ApplicationDbContext _context;
+        private readonly UnitOfWork _unitOfWork;
 
-        public HomeController()
+
+        public HomeController(UnitOfWork unitOfWork)
         {
             _context = new ApplicationDbContext();
+            this._unitOfWork = new UnitOfWork(_context);
         }
 
-        public ActionResult Index(string query=null)
+    public ActionResult Index(string query=null)
         {
             var gigs = _context.Gigs
                 .Include(g => g.Artist)
@@ -37,9 +42,8 @@ namespace GigHub.Controllers
 
             var userId = User.Identity.GetUserId();
 
-            var attendancies = this._context.Attendances
-                .Where(a => a.AttendeeId == userId && a.Gig.DateTime > DateTime.Now)
-                .ToList()
+            var attendancies = _unitOfWork.Attendances
+                .GetFutureAttendances(userId)
                 .ToLookup(a => a.GigId);
 
             var viewModel = new GigsViewModel

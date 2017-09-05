@@ -281,6 +281,11 @@
     <Compile Include="Models\Notification.cs" />
     <Compile Include="Models\NotificationType.cs" />
     <Compile Include="Models\UserNotification.cs" />
+    <Compile Include="Repositories\AttendanceRepository.cs" />
+    <Compile Include="Repositories\FollowingRepository.cs" />
+    <Compile Include="Repositories\GenreRepository.cs" />
+    <Compile Include="Repositories\GigRepository.cs" />
+    <Compile Include="Repositories\UnitOfWork.cs" />
     <Compile Include="ViewModels\GigsViewModel.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -299,6 +304,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <None Include="Content\_site.less" />
+    <Content Include="Scripts\app\app.js" />
+    <Content Include="Scripts\app\controllers\gigDetailsController.js" />
+    <Content Include="Scripts\app\controllers\gigsController.js" />
+    <Content Include="Scripts\app\services\attendanceService.js" />
+    <Content Include="Scripts\app\services\followingService.js" />
     <Content Include="Scripts\bootbox.min.js" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
@@ -360,7 +370,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Scripts\app\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
